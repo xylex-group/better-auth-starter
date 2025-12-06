@@ -1,7 +1,8 @@
 import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { openAPI } from "better-auth/plugins";
-import { Pool } from "pg";
-import { Redis } from "ioredis"
+import { Redis } from "ioredis";
+import { db } from "../db";
 
 const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
    .on("error", (err) => {
@@ -23,6 +24,15 @@ export const auth = betterAuth({
 	},
 	// User configuration to match main app schema
 	user: {
+		// Explicit field mappings for camelCase -> snake_case
+		fields: {
+			name: "name",
+			email: "email",
+			emailVerified: "email_verified",
+			image: "image",
+			createdAt: "created_at",
+			updatedAt: "updated_at",
+		},
 		additionalFields: {
 			role: {
 				type: "string",
@@ -48,6 +58,35 @@ export const auth = betterAuth({
 			enabled: true,
 			maxAge: 5 * 60,
 		},
+		// Explicit field mappings for camelCase -> snake_case
+		fields: {
+			id: "id",
+			userId: "user_id",
+			token: "token",
+			expiresAt: "expires_at",
+			ipAddress: "ip_address",
+			userAgent: "user_agent",
+			createdAt: "created_at",
+			updatedAt: "updated_at",
+		},
+	},
+	// Account field mappings
+	account: {
+		fields: {
+			id: "id",
+			userId: "user_id",
+			accountId: "account_id",
+			providerId: "provider_id",
+			accessToken: "access_token",
+			refreshToken: "refresh_token",
+			accessTokenExpiresAt: "access_token_expires_at",
+			refreshTokenExpiresAt: "refresh_token_expires_at",
+			scope: "scope",
+			idToken: "id_token",
+			password: "password",
+			createdAt: "created_at",
+			updatedAt: "updated_at",
+		},
 	},
 	// Add your plugins here
 	plugins: [openAPI()],
@@ -57,17 +96,9 @@ export const auth = betterAuth({
 			generateId: () => crypto.randomUUID(),
 		},
 	},
-	// DB config
-	database: new Pool({
-		connectionString: process.env.DATABASE_URL,
-		log: (msg) => {
-			// Enhanced logging for debugging
-			if (msg.includes('error') || msg.includes('ERROR')) {
-				console.error('[DB Error]', msg);
-			} else {
-				console.log('[DB]', msg);
-			}
-		},
+	// DB config - Use Drizzle adapter to handle snake_case column mapping
+	database: drizzleAdapter(db, {
+		provider: "pg",
 	}),
 	// This is for the redis session storage
 	secondaryStorage: {
