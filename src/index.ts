@@ -56,7 +56,26 @@ app.on(["POST", "GET", "OPTIONS", "PUT", "DELETE", "PATCH"], "/api/auth/**", asy
     return c.text('', 204)
   }
   
-  return auth.handler(c.req.raw)
+  try {
+    const response = await auth.handler(c.req.raw);
+    
+    // Log 422 errors for debugging
+    if (response.status === 422) {
+      const clonedResponse = response.clone();
+      const body = await clonedResponse.text();
+      console.error('[422 Error]', {
+        path: c.req.path,
+        method: c.req.method,
+        body: body,
+        headers: Object.fromEntries(c.req.raw.headers.entries()),
+      });
+    }
+    
+    return response;
+  } catch (error) {
+    console.error('[Auth Handler Error]', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
 });
 
 export default app

@@ -21,6 +21,25 @@ export const auth = betterAuth({
 		enabled: true,
 		requireEmailVerification: false,
 	},
+	// User configuration to match main app schema
+	user: {
+		additionalFields: {
+			role: {
+				type: "string",
+				required: false,
+				defaultValue: "user",
+				input: false,
+			},
+			organization_id: {
+				type: "string",
+				required: false,
+			},
+			company_id: {
+				type: "string",
+				required: false,
+			},
+		},
+	},
 	// Session config
 	session: {
 		expiresIn: 60 * 60 * 24 * 7, // 7 days
