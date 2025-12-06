@@ -50,4 +50,5 @@ export const auth = betterAuth({
 			await redis.del(key);
 		},
 	},
+	trustedOrigins: process.env.TRUSTED_ORIGINS?.split(',') || [],
 });
