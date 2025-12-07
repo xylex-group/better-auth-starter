@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-core";
 
 // Better Auth Core Schema
 // Reference: https://www.better-auth.com/docs/concepts/database#core-schema
@@ -6,7 +6,7 @@ import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
-  name: text("name").notNull(),
+  name: text("name"), // Made optional - BetterAuth doesn't send name on email/password signup
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
@@ -63,7 +63,12 @@ export const account = pgTable("account", {
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => ({
+  providerAccount: uniqueIndex("provider_account_unique").on(
+    table.providerId,
+    table.accountId
+  ),
+}));
 
 export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
