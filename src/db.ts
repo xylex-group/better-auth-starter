@@ -26,11 +26,6 @@ const queryClient = postgres(process.env.DATABASE_URL, {
   },
 });
 
-// Handle connection errors
-queryClient.on('error', (err) => {
-  console.error('PostgreSQL connection error:', err);
-});
-
 // Create Drizzle instance with auth schema
 export const db = drizzle(queryClient, { 
   schema: authSchema 
