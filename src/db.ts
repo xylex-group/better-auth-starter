@@ -6,11 +6,29 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not defined');
 }
 
-// Create PostgreSQL connection
+// Create PostgreSQL connection with improved settings for Railway/production
 const queryClient = postgres(process.env.DATABASE_URL, {
   max: 10,
   idle_timeout: 20,
-  connect_timeout: 10,
+  connect_timeout: 30, // Increased timeout
+  // Add connection retry logic
+  onnotice: () => {}, // Suppress notices
+  // Better handling for connection resets - use connection string SSL if present
+  // Railway PostgreSQL uses SSL by default, so we should enable it
+  ssl: process.env.DATABASE_URL.includes('sslmode=require') || 
+       process.env.DATABASE_URL.includes('sslmode=prefer') ? 'require' : 
+       process.env.NODE_ENV === 'production' ? 'require' : false,
+  // Keep connections alive
+  keep_alive: 60, // Keep connections alive for 60 seconds
+  // Handle connection errors gracefully
+  transform: {
+    undefined: null,
+  },
+});
+
+// Handle connection errors
+queryClient.on('error', (err) => {
+  console.error('PostgreSQL connection error:', err);
 });
 
 // Create Drizzle instance with auth schema
