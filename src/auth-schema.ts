@@ -8,12 +8,12 @@ export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name"), // Made optional - BetterAuth doesn't send name on email/password signup
   email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified").notNull().default(false),
+  emailVerified: boolean("emailVerified").notNull().default(false), // Database uses camelCase
   image: text("image"),
-  createdAt: timestamp("created_at", { withTimezone: true })
+  createdAt: timestamp("createdAt", { withTimezone: true }) // Database uses camelCase
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
+  updatedAt: timestamp("updatedAt", { withTimezone: true }) // Database uses camelCase
     .notNull()
     .defaultNow(),
   // Additional fields for SuitsBooks
@@ -24,43 +24,43 @@ export const user = pgTable("user", {
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
-  userId: text("user_id")
+  userId: text("userId") // Database uses camelCase - check your actual schema
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   token: text("token").notNull().unique(),
-  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-  ipAddress: text("ip_address"),
-  userAgent: text("user_agent"),
-  createdAt: timestamp("created_at", { withTimezone: true })
+  expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(), // Database uses camelCase
+  ipAddress: text("ipAddress"), // Database uses camelCase
+  userAgent: text("userAgent"), // Database uses camelCase
+  createdAt: timestamp("createdAt", { withTimezone: true }) // Database uses camelCase
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
+  updatedAt: timestamp("updatedAt", { withTimezone: true }) // Database uses camelCase
     .notNull()
     .defaultNow(),
 });
 
 export const account = pgTable("account", {
   id: text("id").primaryKey(),
-  userId: text("user_id")
+  userId: text("userId") // Database uses camelCase - check your actual schema
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  accountId: text("account_id").notNull(),
-  providerId: text("provider_id").notNull(),
-  accessToken: text("access_token"),
-  refreshToken: text("refresh_token"),
-  accessTokenExpiresAt: timestamp("access_token_expires_at", {
+  accountId: text("accountId").notNull(), // Database uses camelCase
+  providerId: text("providerId").notNull(), // Database uses camelCase
+  accessToken: text("accessToken"), // Database uses camelCase
+  refreshToken: text("refreshToken"), // Database uses camelCase
+  accessTokenExpiresAt: timestamp("accessTokenExpiresAt", { // Database uses camelCase
     withTimezone: true,
   }),
-  refreshTokenExpiresAt: timestamp("refresh_token_expires_at", {
+  refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt", { // Database uses camelCase
     withTimezone: true,
   }),
   scope: text("scope"),
-  idToken: text("id_token"),
+  idToken: text("idToken"), // Database uses camelCase
   password: text("password"),
-  createdAt: timestamp("created_at", { withTimezone: true })
+  createdAt: timestamp("createdAt", { withTimezone: true }) // Database uses camelCase
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
+  updatedAt: timestamp("updatedAt", { withTimezone: true }) // Database uses camelCase
     .notNull()
     .defaultNow(),
 }, (table) => ({
@@ -74,11 +74,11 @@ export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
-  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
+  expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(), // Database uses camelCase
+  createdAt: timestamp("createdAt", { withTimezone: true }) // Database uses camelCase
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
+  updatedAt: timestamp("updatedAt", { withTimezone: true }) // Database uses camelCase
     .notNull()
     .defaultNow(),
 });
