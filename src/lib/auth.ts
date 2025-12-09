@@ -24,14 +24,14 @@ export const auth = betterAuth({
 	},
 	// User configuration to match main app schema
 	user: {
-		// Explicit field mappings for camelCase -> snake_case
+		// Explicit field mappings - database uses camelCase
 		fields: {
 			name: "name",
 			email: "email",
-			emailVerified: "email_verified",
+			emailVerified: "emailVerified",  // Database uses camelCase, not snake_case
 			image: "image",
-			createdAt: "created_at",
-			updatedAt: "updated_at",
+			createdAt: "createdAt",  // Check if this is also camelCase
+			updatedAt: "updatedAt",  // Check if this is also camelCase
 		},
 		additionalFields: {
 			role: {
