@@ -18,8 +18,7 @@ export const user = pgTable("user", {
     .defaultNow(),
   // Additional fields for SuitsBooks
   role: text("role").default("user"),
-  organization_id: text("organization_id"),
-  company_id: text("company_id"),
+  // Note: organization_id and company_id are stored in Supabase users table, not in Better Auth user table
 });
 
 export const session = pgTable("session", {

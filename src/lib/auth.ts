@@ -40,14 +40,7 @@ export const auth = betterAuth({
 				defaultValue: "user",
 				input: false,
 			},
-			organization_id: {
-				type: "string",
-				required: false,
-			},
-			company_id: {
-				type: "string",
-				required: false,
-			},
+			// Note: organization_id and company_id are stored in Supabase users table, not in Better Auth
 		},
 	},
 	// Session config
