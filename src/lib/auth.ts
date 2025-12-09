@@ -28,10 +28,10 @@ export const auth = betterAuth({
 		fields: {
 			name: "name",
 			email: "email",
-			emailVerified: "emailVerified",  // Database uses camelCase, not snake_case
+			emailVerified: "emailVerified",  // Database uses camelCase
 			image: "image",
-			createdAt: "createdAt",  // Check if this is also camelCase
-			updatedAt: "updatedAt",  // Check if this is also camelCase
+			createdAt: "createdAt",  // Database uses camelCase
+			updatedAt: "updatedAt",  // Database uses camelCase
 		},
 		additionalFields: {
 			role: {
@@ -58,34 +58,34 @@ export const auth = betterAuth({
 			enabled: true,
 			maxAge: 5 * 60,
 		},
-		// Explicit field mappings for camelCase -> snake_case
+		// Explicit field mappings - check your database schema
 		fields: {
 			id: "id",
-			userId: "user_id",
+			userId: "userId",  // Check if this is camelCase or user_id
 			token: "token",
-			expiresAt: "expires_at",
-			ipAddress: "ip_address",
-			userAgent: "user_agent",
-			createdAt: "created_at",
-			updatedAt: "updated_at",
+			expiresAt: "expiresAt",  // Check if this is camelCase or expires_at
+			ipAddress: "ipAddress",  // Check if this is camelCase or ip_address
+			userAgent: "userAgent",  // Check if this is camelCase or user_agent
+			createdAt: "createdAt",  // Check if this is camelCase or created_at
+			updatedAt: "updatedAt",  // Check if this is camelCase or updated_at
 		},
 	},
-	// Account field mappings
+	// Account field mappings - check your database schema
 	account: {
 		fields: {
 			id: "id",
-			userId: "user_id",
-			accountId: "account_id",
-			providerId: "provider_id",
-			accessToken: "access_token",
-			refreshToken: "refresh_token",
-			accessTokenExpiresAt: "access_token_expires_at",
-			refreshTokenExpiresAt: "refresh_token_expires_at",
+			userId: "userId",  // Check if this is camelCase or user_id
+			accountId: "accountId",  // Check if this is camelCase or account_id
+			providerId: "providerId",  // Check if this is camelCase or provider_id
+			accessToken: "accessToken",  // Check if this is camelCase or access_token
+			refreshToken: "refreshToken",  // Check if this is camelCase or refresh_token
+			accessTokenExpiresAt: "accessTokenExpiresAt",  // Check if this is camelCase
+			refreshTokenExpiresAt: "refreshTokenExpiresAt",  // Check if this is camelCase
 			scope: "scope",
-			idToken: "id_token",
+			idToken: "idToken",  // Check if this is camelCase or id_token
 			password: "password",
-			createdAt: "created_at",
-			updatedAt: "updated_at",
+			createdAt: "createdAt",  // Check if this is camelCase or created_at
+			updatedAt: "updatedAt",  // Check if this is camelCase or updated_at
 		},
 	},
 	// Add your plugins here
