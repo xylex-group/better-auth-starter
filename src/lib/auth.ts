@@ -1,6 +1,18 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { openAPI } from "better-auth/plugins";
+import { 
+	openAPI,
+	multiSession,
+	bearer,
+	organization,
+	apiKey,
+	emailOTP,
+	username,
+	twoFactor,
+	admin,
+} from "better-auth/plugins";
+import { sso } from "better-auth/plugins/sso";
+import { passkey } from "better-auth/plugins/passkey";
 import { Redis } from "ioredis";
 import { db } from "../db";
 
@@ -84,6 +96,16 @@ export const auth = betterAuth({
 	// Add your plugins here
 	plugins: [
 		openAPI(),
+		multiSession(),
+		bearer(),
+		sso(),
+		organization(),
+		apiKey(),
+		emailOTP(),
+		username(),
+		twoFactor(),
+		admin(),
+		passkey(),
 		{
 			id: "set-default-name",
 			hooks: {
