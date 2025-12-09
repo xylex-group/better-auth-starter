@@ -82,7 +82,26 @@ export const auth = betterAuth({
 		},
 	},
 	// Add your plugins here
-	plugins: [openAPI()],
+	plugins: [
+		openAPI(),
+		{
+			id: "set-default-name",
+			hooks: {
+				user: {
+					created: {
+						before: async (user) => {
+							// If name is null or empty, set a default value before insertion
+							if (!user.name || user.name.trim() === "") {
+								// Set default name using email prefix or "User"
+								user.name = user.email?.split("@")[0] || "User";
+							}
+							return user;
+						},
+					},
+				},
+			},
+		},
+	],
 	// Advanced configuration
 	advanced: {
 		database: {

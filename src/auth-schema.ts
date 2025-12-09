@@ -6,7 +6,7 @@ import { pgTable, text, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-c
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
-  name: text("name"), // Made optional - BetterAuth doesn't send name on email/password signup
+  name: text("name").notNull().default(""), // Database requires NOT NULL, provide empty string default
   email: text("email").notNull().unique(),
   emailVerified: boolean("emailVerified").notNull().default(false), // Database uses camelCase
   image: text("image"),
