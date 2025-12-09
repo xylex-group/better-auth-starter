@@ -28,8 +28,18 @@ const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
    })
 
 // Check better-auth docs for more info https://www.better-auth.com/docs/
+// Determine if we should use __Secure- prefix for cookies
+// The __Secure- prefix requires HTTPS and Secure flag
+// For localhost/HTTP development, we need to disable it
+const baseURL = process.env.BETTER_AUTH_URL || process.env.BASE_URL || "";
+const isProduction = process.env.NODE_ENV === "production";
+const isSecureOrigin = baseURL.startsWith("https://") || (!baseURL && isProduction);
+const cookiePrefix = isSecureOrigin ? "__Secure-" : "";
+
 export const auth = betterAuth({
 	secret: process.env.BETTER_AUTH_SECRET,
+	// Disable __Secure- prefix in development (localhost/HTTP)
+	cookiePrefix,
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: false,
@@ -151,6 +161,6 @@ export const auth = betterAuth({
 			await redis.del(key);
 		},
 	},
-	baseURL: process.env.BETTER_AUTH_URL || process.env.BASE_URL,
+	baseURL,
 	trustedOrigins: process.env.TRUSTED_ORIGINS?.split(',').map(s => s.trim()).filter(Boolean) || [],
 });
