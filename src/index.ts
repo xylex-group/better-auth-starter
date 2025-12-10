@@ -59,11 +59,16 @@ app.on(["POST", "GET", "OPTIONS", "PUT", "DELETE", "PATCH"], "/api/auth/**", asy
   try {
     const response = await auth.handler(c.req.raw);
     
-    // Log 422 errors for debugging
-    if (response.status === 422) {
+    // Log errors for debugging
+    if (response.status >= 400) {
       const clonedResponse = response.clone();
-      const body = await clonedResponse.text();
-      console.error('[422 Error]', {
+      let body = '';
+      try {
+        body = await clonedResponse.text();
+      } catch (e) {
+        body = 'Failed to read response body';
+      }
+      console.error(`[${response.status} Error]`, {
         path: c.req.path,
         method: c.req.method,
         body: body,
@@ -73,8 +78,17 @@ app.on(["POST", "GET", "OPTIONS", "PUT", "DELETE", "PATCH"], "/api/auth/**", asy
     
     return response;
   } catch (error) {
-    console.error('[Auth Handler Error]', error);
-    return c.json({ error: 'Internal server error' }, 500);
+    console.error('[Auth Handler Error]', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      path: c.req.path,
+      method: c.req.method,
+    });
+    return c.json({ 
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : String(error),
+      code: 'INTERNAL_SERVER_ERROR'
+    }, 500);
   }
 });
 
