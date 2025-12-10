@@ -8,12 +8,12 @@ export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull().default(""), // Database requires NOT NULL, provide empty string default
   email: text("email").notNull().unique(),
-  emailVerified: boolean("emailVerified").notNull().default(false), // Database uses camelCase
+  emailVerified: boolean("email_verified").notNull().default(false), // Database uses snake_case
   image: text("image"),
-  createdAt: timestamp("createdAt", { withTimezone: true }) // Database uses camelCase
+  createdAt: timestamp("created_at", { withTimezone: true }) // Database uses snake_case
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp("updatedAt", { withTimezone: true }) // Database uses camelCase
+  updatedAt: timestamp("updated_at", { withTimezone: true }) // Database uses snake_case
     .notNull()
     .defaultNow(),
   // Additional fields for SuitsBooks
@@ -23,43 +23,43 @@ export const user = pgTable("user", {
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
-  userId: text("userId") // Database uses camelCase - check your actual schema
+  userId: text("user_id") // Database uses snake_case
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   token: text("token").notNull().unique(),
-  expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(), // Database uses camelCase
-  ipAddress: text("ipAddress"), // Database uses camelCase
-  userAgent: text("userAgent"), // Database uses camelCase
-  createdAt: timestamp("createdAt", { withTimezone: true }) // Database uses camelCase
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(), // Database uses snake_case
+  ipAddress: text("ip_address"), // Database uses snake_case
+  userAgent: text("user_agent"), // Database uses snake_case
+  createdAt: timestamp("created_at", { withTimezone: true }) // Database uses snake_case
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp("updatedAt", { withTimezone: true }) // Database uses camelCase
+  updatedAt: timestamp("updated_at", { withTimezone: true }) // Database uses snake_case
     .notNull()
     .defaultNow(),
 });
 
 export const account = pgTable("account", {
   id: text("id").primaryKey(),
-  userId: text("userId") // Database uses camelCase - check your actual schema
+  userId: text("user_id") // Database uses snake_case
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  accountId: text("accountId").notNull(), // Database uses camelCase
-  providerId: text("providerId").notNull(), // Database uses camelCase
-  accessToken: text("accessToken"), // Database uses camelCase
-  refreshToken: text("refreshToken"), // Database uses camelCase
-  accessTokenExpiresAt: timestamp("accessTokenExpiresAt", { // Database uses camelCase
+  accountId: text("account_id").notNull(), // Database uses snake_case
+  providerId: text("provider_id").notNull(), // Database uses snake_case
+  accessToken: text("access_token"), // Database uses snake_case
+  refreshToken: text("refresh_token"), // Database uses snake_case
+  accessTokenExpiresAt: timestamp("access_token_expires_at", { // Database uses snake_case
     withTimezone: true,
   }),
-  refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt", { // Database uses camelCase
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { // Database uses snake_case
     withTimezone: true,
   }),
   scope: text("scope"),
-  idToken: text("idToken"), // Database uses camelCase
+  idToken: text("id_token"), // Database uses snake_case
   password: text("password"),
-  createdAt: timestamp("createdAt", { withTimezone: true }) // Database uses camelCase
+  createdAt: timestamp("created_at", { withTimezone: true }) // Database uses snake_case
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp("updatedAt", { withTimezone: true }) // Database uses camelCase
+  updatedAt: timestamp("updated_at", { withTimezone: true }) // Database uses snake_case
     .notNull()
     .defaultNow(),
 }, (table) => ({
@@ -73,11 +73,11 @@ export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
-  expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(), // Database uses camelCase
-  createdAt: timestamp("createdAt", { withTimezone: true }) // Database uses camelCase
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(), // Database uses snake_case
+  createdAt: timestamp("created_at", { withTimezone: true }) // Database uses snake_case
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp("updatedAt", { withTimezone: true }) // Database uses camelCase
+  updatedAt: timestamp("updated_at", { withTimezone: true }) // Database uses snake_case
     .notNull()
     .defaultNow(),
 });

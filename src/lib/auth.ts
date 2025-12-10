@@ -46,14 +46,14 @@ export const auth = betterAuth({
 	},
 	// User configuration to match main app schema
 	user: {
-		// Explicit field mappings - database uses camelCase
+		// Explicit field mappings - database uses snake_case
 		fields: {
 			name: "name",
 			email: "email",
-			emailVerified: "emailVerified",  // Database uses camelCase
+			emailVerified: "email_verified",  // Database uses snake_case
 			image: "image",
-			createdAt: "createdAt",  // Database uses camelCase
-			updatedAt: "updatedAt",  // Database uses camelCase
+			createdAt: "created_at",  // Database uses snake_case
+			updatedAt: "updated_at",  // Database uses snake_case
 		},
 		additionalFields: {
 			role: {
@@ -73,34 +73,34 @@ export const auth = betterAuth({
 			enabled: true,
 			maxAge: 5 * 60,
 		},
-		// Explicit field mappings - check your database schema
+		// Explicit field mappings - database uses snake_case
 		fields: {
 			id: "id",
-			userId: "userId",  // Check if this is camelCase or user_id
+			userId: "user_id",  // Database uses snake_case
 			token: "token",
-			expiresAt: "expiresAt",  // Check if this is camelCase or expires_at
-			ipAddress: "ipAddress",  // Check if this is camelCase or ip_address
-			userAgent: "userAgent",  // Check if this is camelCase or user_agent
-			createdAt: "createdAt",  // Check if this is camelCase or created_at
-			updatedAt: "updatedAt",  // Check if this is camelCase or updated_at
+			expiresAt: "expires_at",  // Database uses snake_case
+			ipAddress: "ip_address",  // Database uses snake_case
+			userAgent: "user_agent",  // Database uses snake_case
+			createdAt: "created_at",  // Database uses snake_case
+			updatedAt: "updated_at",  // Database uses snake_case
 		},
 	},
-	// Account field mappings - check your database schema
+	// Account field mappings - database uses snake_case
 	account: {
 		fields: {
 			id: "id",
-			userId: "userId",  // Check if this is camelCase or user_id
-			accountId: "accountId",  // Check if this is camelCase or account_id
-			providerId: "providerId",  // Check if this is camelCase or provider_id
-			accessToken: "accessToken",  // Check if this is camelCase or access_token
-			refreshToken: "refreshToken",  // Check if this is camelCase or refresh_token
-			accessTokenExpiresAt: "accessTokenExpiresAt",  // Check if this is camelCase
-			refreshTokenExpiresAt: "refreshTokenExpiresAt",  // Check if this is camelCase
+			userId: "user_id",  // Database uses snake_case
+			accountId: "account_id",  // Database uses snake_case
+			providerId: "provider_id",  // Database uses snake_case
+			accessToken: "access_token",  // Database uses snake_case
+			refreshToken: "refresh_token",  // Database uses snake_case
+			accessTokenExpiresAt: "access_token_expires_at",  // Database uses snake_case
+			refreshTokenExpiresAt: "refresh_token_expires_at",  // Database uses snake_case
 			scope: "scope",
-			idToken: "idToken",  // Check if this is camelCase or id_token
+			idToken: "id_token",  // Database uses snake_case
 			password: "password",
-			createdAt: "createdAt",  // Check if this is camelCase or created_at
-			updatedAt: "updatedAt",  // Check if this is camelCase or updated_at
+			createdAt: "created_at",  // Database uses snake_case
+			updatedAt: "updated_at",  // Database uses snake_case
 		},
 	},
 	// Add your plugins here
