@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { 
+import {
 	openAPI,
 	multiSession,
 	bearer,
@@ -14,18 +14,19 @@ import {
 import { sso } from "better-auth/plugins/sso";
 import { passkey } from "better-auth/plugins/passkey";
 import { Redis } from "ioredis";
+import { randomUUID } from "crypto";
 import { db } from "../db";
 
 const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
-   .on("error", (err) => {
-     console.error("Redis connection error:", err)
-   })
-   .on("connect", () => {
-     console.log("Redis connected")
-   })
-  .on("ready", () => {
-     console.log("Redis ready")
-   })
+	.on("error", (err) => {
+		console.error("Redis connection error:", err);
+	})
+	.on("connect", () => {
+		console.log("Redis connected");
+	})
+	.on("ready", () => {
+		console.log("Redis ready");
+	});
 
 // Check better-auth docs for more info https://www.better-auth.com/docs/
 // Determine if we should use __Secure- prefix for cookies
@@ -132,7 +133,7 @@ export const auth = betterAuth({
 	// Advanced configuration
 	advanced: {
 		database: {
-			generateId: () => crypto.randomUUID(),
+			generateId: () => randomUUID(),
 		},
 	},
 	// DB config - Use Drizzle adapter to handle snake_case column mapping
@@ -157,5 +158,12 @@ export const auth = betterAuth({
 		},
 	},
 	baseURL,
-	trustedOrigins: process.env.TRUSTED_ORIGINS?.split(',').map(s => s.trim()).filter(Boolean) || [],
+	trustedOrigins: process.env.TRUSTED_ORIGINS?.split(",").map((s) => s.trim()).filter(Boolean) || [],
+
+	onAPIError: {
+		throw: true,
+		onError: (err, ctx) => {
+			console.error("better-auth error", ctx.path, err);
+		},
+	},
 });
