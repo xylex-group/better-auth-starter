@@ -28,10 +28,7 @@ const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
 		console.log("Redis ready");
 	});
 
-// Check better-auth docs for more info https://www.better-auth.com/docs/
 // Determine if we should use __Secure- prefix for cookies
-// The __Secure- prefix requires HTTPS and Secure flag
-// For localhost/HTTP development, we need to disable it
 const baseURL = process.env.BETTER_AUTH_URL || process.env.BASE_URL || "";
 const isProduction = process.env.NODE_ENV === "production";
 const isSecureOrigin = baseURL.startsWith("https://") || (!baseURL && isProduction);
@@ -39,12 +36,29 @@ const cookiePrefix = isSecureOrigin ? "__Secure-" : "";
 
 export const auth = betterAuth({
 	secret: process.env.BETTER_AUTH_SECRET,
+
+	logger: {
+		level: "debug",
+		log: (level, message, ...args) => {
+			console.log(`[better-auth:${level}] ${message}`, ...args);
+		},
+	},
+
+	onAPIError: {
+		throw: true,
+		onError: (error, ctx) => {
+			console.error("better-auth api error", ctx.path, error);
+		},
+	},
+
 	// Disable __Secure- prefix in development (localhost/HTTP)
 	cookiePrefix,
+
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: false,
 	},
+
 	user: {
 		fields: {
 			name: "name",
@@ -61,9 +75,9 @@ export const auth = betterAuth({
 				defaultValue: "user",
 				input: false,
 			},
-			// Note: organization_id and company_id are stored in Supabase users table, not in Better Auth
 		},
 	},
+
 	session: {
 		expiresIn: 60 * 60 * 24 * 7,
 		updateAge: 60 * 60 * 24,
@@ -82,6 +96,7 @@ export const auth = betterAuth({
 			updatedAt: "updatedAt",
 		},
 	},
+
 	account: {
 		fields: {
 			id: "id",
@@ -99,7 +114,7 @@ export const auth = betterAuth({
 			updatedAt: "updatedAt",
 		},
 	},
-	// Add your plugins here
+
 	plugins: [
 		openAPI(),
 		multiSession(),
@@ -107,7 +122,7 @@ export const auth = betterAuth({
 		sso(),
 		organization(),
 		apiKey(),
-		// emailOTP(),
+		emailOTP(),
 		username(),
 		twoFactor(),
 		admin(),
@@ -118,9 +133,7 @@ export const auth = betterAuth({
 				user: {
 					created: {
 						before: async (user) => {
-							// If name is null or empty, set a default value before insertion
 							if (!user.name || user.name.trim() === "") {
-								// Set default name using email prefix or "User"
 								user.name = user.email?.split("@")[0] || "User";
 							}
 							return user;
@@ -130,17 +143,17 @@ export const auth = betterAuth({
 			},
 		},
 	],
-	// Advanced configuration
+
 	advanced: {
 		database: {
 			generateId: () => randomUUID(),
 		},
 	},
-	// DB config - Use Drizzle adapter to handle snake_case column mapping
+
 	database: drizzleAdapter(db, {
 		provider: "pg",
 	}),
-	// This is for the redis session storage
+
 	secondaryStorage: {
 		get: async (key) => {
 			const value = await redis.get(key);
@@ -157,13 +170,7 @@ export const auth = betterAuth({
 			await redis.del(key);
 		},
 	},
+
 	baseURL,
 	trustedOrigins: process.env.TRUSTED_ORIGINS?.split(",").map((s) => s.trim()).filter(Boolean) || [],
-
-	onAPIError: {
-		throw: true,
-		onError: (err, ctx) => {
-			console.error("better-auth error", ctx.path, err);
-		},
-	},
 });
