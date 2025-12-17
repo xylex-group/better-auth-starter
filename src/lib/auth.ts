@@ -107,7 +107,7 @@ export const auth = betterAuth({
 		sso(),
 		organization(),
 		apiKey(),
-		emailOTP(),
+		// emailOTP(),
 		username(),
 		twoFactor(),
 		admin(),
