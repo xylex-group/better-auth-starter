@@ -13,6 +13,7 @@ import {
 } from "better-auth/plugins";
 import { sso } from "better-auth/plugins/sso";
 import { passkey } from "better-auth/plugins/passkey";
+import { expo } from "@better-auth/expo";
 import { Redis } from "ioredis";
 import { db } from "../db";
 
@@ -100,6 +101,7 @@ export const auth = betterAuth({
 	},
 	// Add your plugins here
 	plugins: [
+		expo(),
 		openAPI(),
 		multiSession(),
 		bearer(),
@@ -157,5 +159,18 @@ export const auth = betterAuth({
 		},
 	},
 	baseURL,
-	trustedOrigins: process.env.TRUSTED_ORIGINS?.split(',').map(s => s.trim()).filter(Boolean) || [],
+	trustedOrigins: [
+		...(process.env.TRUSTED_ORIGINS?.split(',').map(s => s.trim()).filter(Boolean) || []),
+		"https://suitsbooks.app",
+		"https://app.suitsbooks.com",
+		"suitsbooks://",
+		"suitsbooks://*",
+		...(process.env.NODE_ENV === "development" ? [
+			"exp://*/*",
+			"exp://10.0.0.*:*/*",
+			"exp://192.168.*.*:*/*",
+			"exp://172.*.*.*:*/*",
+			"exp://localhost:*/*",
+		] : []),
+	],
 });
