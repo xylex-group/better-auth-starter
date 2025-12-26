@@ -18,28 +18,18 @@ import { Redis } from "ioredis";
 import { db } from "../db";
 
 const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
-   .on("error", (err) => {
-     console.error("Redis connection error:", err)
-   })
-   .on("connect", () => {
-     console.log("Redis connected")
-   })
-  .on("ready", () => {
-     console.log("Redis ready")
-   })
+   .on("error", (err) => console.error("Redis connection error:", err))
+   .on("connect", () => console.log("Redis connected"))
+   .on("ready", () => console.log("Redis ready"));
 
-// Check better-auth docs for more info https://www.better-auth.com/docs/
-// Determine if we should use __Secure- prefix for cookies
-// The __Secure- prefix requires HTTPS and Secure flag
-// For localhost/HTTP development, we need to disable it
-const baseURL = process.env.BETTER_AUTH_URL || process.env.BASE_URL || "";
+// Use BASE_URL explicitly for dev + production
+const baseURL = process.env.BASE_URL || "http://localhost:3000";
 const isProduction = process.env.NODE_ENV === "production";
 const isSecureOrigin = baseURL.startsWith("https://") || (!baseURL && isProduction);
 const cookiePrefix = isSecureOrigin ? "__Secure-" : "";
 
 export const auth = betterAuth({
 	secret: process.env.BETTER_AUTH_SECRET,
-	// Disable __Secure- prefix in development (localhost/HTTP)
 	cookiePrefix,
 	emailAndPassword: {
 		enabled: true,
@@ -55,22 +45,13 @@ export const auth = betterAuth({
 			updatedAt: "updatedAt",
 		},
 		additionalFields: {
-			role: {
-				type: "string",
-				required: false,
-				defaultValue: "user",
-				input: false,
-			},
-			// Note: organization_id and company_id are stored in Supabase users table, not in Better Auth
+			role: { type: "string", required: false, defaultValue: "user", input: false },
 		},
 	},
 	session: {
 		expiresIn: 60 * 60 * 24 * 7,
 		updateAge: 60 * 60 * 24,
-		cookieCache: {
-			enabled: true,
-			maxAge: 5 * 60,
-		},
+		cookieCache: { enabled: true, maxAge: 5 * 60 },
 		fields: {
 			id: "id",
 			userId: "userId",
@@ -99,7 +80,6 @@ export const auth = betterAuth({
 			updatedAt: "updatedAt",
 		},
 	},
-	// Add your plugins here
 	plugins: [
 		expo(),
 		openAPI(),
@@ -110,7 +90,7 @@ export const auth = betterAuth({
 		apiKey(),
 		emailOTP(),
 		username(),
-		twoFactor(),
+		twoFactor({ issuer: "SuitsBooks" }),
 		admin(),
 		passkey(),
 		{
@@ -119,9 +99,7 @@ export const auth = betterAuth({
 				user: {
 					created: {
 						before: async (user) => {
-							// If name is null or empty, set a default value before insertion
 							if (!user.name || user.name.trim() === "") {
-								// Set default name using email prefix or "User"
 								user.name = user.email?.split("@")[0] || "User";
 							}
 							return user;
@@ -131,46 +109,36 @@ export const auth = betterAuth({
 			},
 		},
 	],
-	// Advanced configuration
 	advanced: {
-		database: {
-			generateId: () => crypto.randomUUID(),
-		},
+		database: { generateId: () => crypto.randomUUID() },
 	},
-	// DB config - Use Drizzle adapter to handle snake_case column mapping
-	database: drizzleAdapter(db, {
-		provider: "pg",
-	}),
-	// This is for the redis session storage
+	database: drizzleAdapter(db, { provider: "pg" }),
 	secondaryStorage: {
 		get: async (key) => {
 			const value = await redis.get(key);
-			return value ? value : null;
+			return value ?? null;
 		},
 		set: async (key, value, ttl) => {
-			if (ttl) {
-				await redis.set(key, value, "EX", ttl);
-			} else {
-				await redis.set(key, value);
-			}
+			if (ttl) await redis.set(key, value, "EX", ttl);
+			else await redis.set(key, value);
 		},
-		delete: async (key) => {
-			await redis.del(key);
-		},
+		delete: async (key) => await redis.del(key),
 	},
 	baseURL,
 	trustedOrigins: [
-		...(process.env.TRUSTED_ORIGINS?.split(',').map(s => s.trim()).filter(Boolean) || []),
+		...(process.env.TRUSTED_ORIGINS?.split(",").map(s => s.trim()).filter(Boolean) || []),
 		"https://suitsbooks.app",
 		"https://app.suitsbooks.com",
 		"suitsbooks://",
 		"suitsbooks://*",
-		...(process.env.NODE_ENV === "development" ? [
-			"exp://*/*",
-			"exp://10.0.0.*:*/*",
-			"exp://192.168.*.*:*/*",
-			"exp://172.*.*.*:*/*",
-			"exp://localhost:*/*",
-		] : []),
+		...(process.env.NODE_ENV === "development"
+			? [
+				"exp://*/*",
+				"exp://10.0.0.*:*/*",
+				"exp://192.168.*.*:*/*",
+				"exp://172.*.*.*:*/*",
+				"exp://localhost:*/*",
+			]
+			: []),
 	],
 });
