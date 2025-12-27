@@ -4,6 +4,7 @@ This template provides a simple, ready-to-use authentication server as a startin
 
 ## ✨ Features
 - 📧 Email and password login and registration
+- 🍎 Apple ID login (Sign in with Apple)
 - 🩺 Healthcheck endpoint
 - 📚 OpenAPI plugin enabled
 - 💾 Session storage in Redis
@@ -16,6 +17,10 @@ Required environment variables:
 - `REDIS_URL` - Connection string for Redis
 - `DATABASE_URL` - Connection string for your database
 - `BETTER_AUTH_SECRET` - Secret key for encryption and security
+
+Optional environment variables (for Apple ID login):
+- `APPLE_CLIENT_ID` - Apple Service ID (Client ID)
+- `APPLE_CLIENT_SECRET` - Apple client secret (JWT token)
 
 ## 💡 Considerations
 - 🔄 I strongly encourage **FORKING THIS REPO** and modifying the config to suit your needs, add other providers, email sending, etc.

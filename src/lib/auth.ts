@@ -80,6 +80,12 @@ export const auth = betterAuth({
 			updatedAt: "updatedAt",
 		},
 	},
+	socialProviders: {
+		apple: {
+			clientId: process.env.APPLE_CLIENT_ID!,
+			clientSecret: process.env.APPLE_CLIENT_SECRET!,
+		},
+	},
 	plugins: [
 		expo(),
 		openAPI(),
@@ -131,6 +137,7 @@ export const auth = betterAuth({
 		"https://app.suitsbooks.com",
 		"suitsbooks://",
 		"suitsbooks://*",
+		"https://appleid.apple.com",
 		...(process.env.NODE_ENV === "development"
 			? [
 				"exp://*/*",
