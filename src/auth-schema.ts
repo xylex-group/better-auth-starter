@@ -168,6 +168,20 @@ export const apikey = pgTable("apikey", {
 		}).onDelete("cascade"),
 ]);
 
+export const passkey = pgTable("passkey", {
+	id: text().primaryKey().notNull(),
+	name: text(),
+	publicKey: text().notNull(),
+	userId: text().notNull(),
+	credentialId: text().notNull(),
+	counter: integer().notNull(),
+	deviceType: text().notNull(),
+	backedUp: boolean().notNull(),
+	transports: text(),
+	createdAt: timestamp({ withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	aaguid: text(),
+});
+
 export const twoFactor = pgTable("twoFactor", {
 	id: text().primaryKey().notNull(),
 	secret: text().notNull(),
