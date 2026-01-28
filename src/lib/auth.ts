@@ -75,6 +75,20 @@ export const auth = betterAuth({
 		multiSession(),
 		bearer(),
 		organization({
+			roles: {
+				owner: {
+					permissions: ["organization:delete", "organization:update", "member:create", "member:delete", "member:update", "invitation:create", "invitation:cancel"],
+				},
+				admin: {
+					permissions: ["organization:update", "member:create", "member:delete", "member:update", "invitation:create", "invitation:cancel"],
+				},
+				member: {
+					permissions: ["member:create", "invitation:create"],
+				},
+				customer: {
+					permissions: [],
+				},
+			},
 			organizationHooks: {
 				afterAcceptInvitation: async ({ invitation, member }: any) => {
 					if (invitation?.customerId && member) {
