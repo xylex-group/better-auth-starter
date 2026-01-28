@@ -88,6 +88,28 @@ export const auth = betterAuth({
 				...defaultRoles,
 				customer,
 			},
+			schema: {
+				invitation: {
+					additionalFields: {
+						customerId: {
+							type: "string",
+							required: false,
+							input: true,
+							fieldName: "customer_id",
+						},
+					},
+				},
+				member: {
+					additionalFields: {
+						customerId: {
+							type: "string",
+							required: false,
+							input: false,
+							fieldName: "customer_id",
+						},
+					},
+				},
+			},
 			organizationHooks: {
 				afterAcceptInvitation: async ({ invitation, member }: any) => {
 					if (invitation?.customerId && member) {
