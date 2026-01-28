@@ -160,6 +160,8 @@ export const auth = betterAuth({
 		"https://app.suitsbooks.com",
 		"suitsbooks://",
 		"suitsbooks://*",
+		"suitsbooksmobileapp://",
+		"suitsbooksmobileapp://*",
 		"https://appleid.apple.com",
 		...(process.env.NODE_ENV === "development"
 			? [
