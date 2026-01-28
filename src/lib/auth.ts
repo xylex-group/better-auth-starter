@@ -110,15 +110,25 @@ export const auth = betterAuth({
 					},
 				},
 			},
-			organizationHooks: {
-				afterAcceptInvitation: async ({ invitation, member }: any) => {
-					if (invitation?.customerId && member) {
-						await db.update(memberTable)
-							.set({ customerId: invitation.customerId })
-							.where(eq(memberTable.id, member.id));
-					}
-				},
-			},
+               organizationHooks: {
+               	beforeCreateInvitation: async ({ invitation }) => {
+               		if (!invitation.customerId) {
+               			return {
+               				data: {
+               					...invitation,
+               					customerId: crypto.randomUUID(),
+               				},
+               			};
+               		}
+               	},
+               	afterAcceptInvitation: async ({ invitation, member }: any) => {
+               		if (invitation?.customerId && member) {
+               			await db.update(memberTable)
+               				.set({ customerId: invitation.customerId })
+               				.where(eq(memberTable.id, member.id));
+               		}
+               	},
+               },
 		}),
 		apiKey(),
 		emailOTP({
