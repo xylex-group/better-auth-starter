@@ -11,6 +11,8 @@ import {
 	twoFactor,
 	admin,
 } from "better-auth/plugins";
+import { createAccessControl } from "better-auth/plugins/access";
+import { defaultStatements, defaultRoles } from "better-auth/plugins/organization/access";
 import { passkey } from "@better-auth/passkey";
 import { expo } from "@better-auth/expo";
 import { Resend } from "resend";
@@ -18,6 +20,12 @@ import { Redis } from "ioredis";
 import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { member as memberTable } from "../auth-schema";
+
+const ac = createAccessControl(defaultStatements);
+
+const customer = ac.newRole({
+	ac: ["read"],
+});
 
 const redis = new Redis(`${process.env.REDIS_URL}?family=0`)
    .on("error", (err) => console.error("Redis connection error:", err))
@@ -75,19 +83,10 @@ export const auth = betterAuth({
 		multiSession(),
 		bearer(),
 		organization({
+			ac,
 			roles: {
-				owner: {
-					permissions: ["organization:delete", "organization:update", "member:create", "member:delete", "member:update", "invitation:create", "invitation:cancel"],
-				},
-				admin: {
-					permissions: ["organization:update", "member:create", "member:delete", "member:update", "invitation:create", "invitation:cancel"],
-				},
-				member: {
-					permissions: ["member:create", "invitation:create"],
-				},
-				customer: {
-					permissions: [],
-				},
+				...defaultRoles,
+				customer,
 			},
 			organizationHooks: {
 				afterAcceptInvitation: async ({ invitation, member }: any) => {
