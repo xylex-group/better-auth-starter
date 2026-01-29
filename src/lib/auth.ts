@@ -91,7 +91,7 @@ export const auth = betterAuth({
 			schema: {
 				invitation: {
 					additionalFields: {
-						customer_id: {
+						customerId: {
 							type: "string",
 							required: false,
 							input: true,
@@ -101,7 +101,7 @@ export const auth = betterAuth({
 				},
 				member: {
 					additionalFields: {
-						customer_id: {
+						customerId: {
 							type: "string",
 							required: false,
 							input: false,
@@ -112,19 +112,19 @@ export const auth = betterAuth({
 			},
                organizationHooks: {
                	beforeCreateInvitation: async ({ invitation }) => {
-               		if (!invitation.customer_id) {
+               		if (!invitation.customerId) {
                			return {
                				data: {
                					...invitation,
-               					customer_id: crypto.randomUUID(),
+               					customerId: crypto.randomUUID(),
                				},
                			};
                		}
                	},
                	afterAcceptInvitation: async ({ invitation, member }: any) => {
-               		if (invitation?.customer_id && member) {
+               		if (invitation?.customerId && member) {
                			await db.update(memberTable)
-               				.set({ customer_id: invitation.customer_id })
+               				.set({ customer_id: invitation.customerId })
                				.where(eq(memberTable.id, member.id));
                		}
                	},
