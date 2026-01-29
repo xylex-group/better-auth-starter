@@ -10,7 +10,7 @@ export const invitation = pgTable("invitation", {
 	expiresAt: timestamp({ withTimezone: true }).notNull(),
 	createdAt: timestamp({ withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	inviterId: text().notNull(),
-	customerId: text("customer_id"),
+	customer_id: text("customer_id"),
 }, (table) => [
 	index("invitation_email_idx").using("btree", table.email.asc().nullsLast().op("text_ops")),
 	index("invitation_organizationId_idx").using("btree", table.organizationId.asc().nullsLast().op("text_ops")),
@@ -77,7 +77,7 @@ export const member = pgTable("member", {
 	userId: text().notNull(),
 	role: text().notNull(),
 	createdAt: timestamp({ withTimezone: true }).notNull(),
-	customerId: text("customer_id"),
+	customer_id: text("customer_id"),
 }, (table) => [
 	index("member_organizationId_idx").using("btree", table.organizationId.asc().nullsLast().op("text_ops")),
 	index("member_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
